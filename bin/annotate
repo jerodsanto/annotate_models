@@ -119,8 +119,14 @@ OptionParser.new do |opts|
     end
   end
 
-  opts.on('-e', '--exclude [tests,fixtures,factories]', ['tests','fixtures','factories'], "Do not annotate fixtures, test files, and/or factories") do |exclusions|
-    exclusions.each { |exclusion| ENV["exclude_#{exclusion}"] = "yes" }
+  excludables = %w(factories fixtures tests)
+  opts.on("-e", "--exclude [#{excludables.join(',')}]", Array,
+          "Do not annotate fixtures, test files, and/or factories") do |exclusions|
+    exclusions.each do |exclusion|
+      if excludables.include? exclusion
+        ENV["exclude_#{exclusion}"] = "yes"
+      end
+    end
   end
 
   opts.on('-f', '--format [bare|rdoc|markdown]', ['bare', 'rdoc', 'markdown'], 'Render Schema Infomation as plain/RDoc/Markdown') do |fmt|
